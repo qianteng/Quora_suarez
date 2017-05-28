@@ -254,6 +254,9 @@ def main():
         y_train = df_train['is_duplicate'].values
         X_train.to_pickle("../features/X_train.pkl")
     else:
+        df_train = pd.read_csv('../data/train.csv')
+        df_train = df_train.fillna(' ')
+        y_train = df_train['is_duplicate'].values
         X_train = pd.read_pickle("../features/X_train.pkl")
     
     X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.1, random_state=4242)
