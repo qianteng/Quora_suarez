@@ -196,22 +196,7 @@ def main():
                         help='save_file_names')
     args = parser.parse_args()
 
-    df_train = pd.read_csv('../features/train_features.csv', encoding="ISO-8859-1")
-    X_train_ab = df_train.iloc[:, 2:-1]
-    X_train_ab = X_train_ab.drop('euclidean_distance', axis=1)
-    X_train_ab = X_train_ab.drop('jaccard_distance', axis=1)
-
-    df_train = pd.read_csv('../data/train.csv')
-    df_train = df_train.fillna(' ')
-
-    df_test = pd.read_csv('../data/test.csv')
-    ques = pd.concat([df_train[['question1', 'question2']], \
-        df_test[['question1', 'question2']]], axis=0).reset_index(drop='index')
-    q_dict = defaultdict(set)
-    for i in range(ques.shape[0]):
-            q_dict[ques.question1[i]].add(ques.question2[i])
-            q_dict[ques.question2[i]].add(ques.question1[i])
-
+    train_flag = False             # False to read feature from pkl
     def q1_freq(row):
         return(len(q_dict[row['question1']]))
         
@@ -220,38 +205,56 @@ def main():
         
     def q1_q2_intersect(row):
         return(len(set(q_dict[row['question1']]).intersection(set(q_dict[row['question2']]))))
-
-    df_train['q1_q2_intersect'] = df_train.apply(q1_q2_intersect, axis=1, raw=True)
-    df_train['q1_freq'] = df_train.apply(q1_freq, axis=1, raw=True)
-    df_train['q2_freq'] = df_train.apply(q2_freq, axis=1, raw=True)
-
-    df_test['q1_q2_intersect'] = df_test.apply(q1_q2_intersect, axis=1, raw=True)
-    df_test['q1_freq'] = df_test.apply(q1_freq, axis=1, raw=True)
-    df_test['q2_freq'] = df_test.apply(q2_freq, axis=1, raw=True)
-
-    test_leaky = df_test.loc[:, ['q1_q2_intersect','q1_freq','q2_freq']]
-    del df_test
-
-    train_leaky = df_train.loc[:, ['q1_q2_intersect','q1_freq','q2_freq']]
-
-    # explore
-    stops = set(stopwords.words("english"))
-
-    df_train['question1'] = df_train['question1'].map(lambda x: str(x).lower().split())
-    df_train['question2'] = df_train['question2'].map(lambda x: str(x).lower().split())
-
-    train_qs = pd.Series(df_train['question1'].tolist() + df_train['question2'].tolist())
-
-    words = [x for y in train_qs for x in y]
-    counts = Counter(words)
-    weights = {word: get_weight(count) for word, count in counts.items()}
-
-    print('Building Features')
-    X_train = build_features(df_train, stops, weights)
-    X_train = pd.concat((X_train, X_train_ab, train_leaky), axis=1)
-    y_train = df_train['is_duplicate'].values
     
-    X_train.to_pickle("../features/X_train.pkl")
+    if train_flag:
+        df_train = pd.read_csv('../features/train_features.csv', encoding="ISO-8859-1")
+        X_train_ab = df_train.iloc[:, 2:-1]
+        X_train_ab = X_train_ab.drop('euclidean_distance', axis=1)
+        X_train_ab = X_train_ab.drop('jaccard_distance', axis=1)
+
+        df_train = pd.read_csv('../data/train.csv')
+        df_train = df_train.fillna(' ')
+
+        df_test = pd.read_csv('../data/test.csv')
+        ques = pd.concat([df_train[['question1', 'question2']], \
+                          df_test[['question1', 'question2']]], axis=0).reset_index(drop='index')
+        q_dict = defaultdict(set)
+        for i in range(ques.shape[0]):
+            q_dict[ques.question1[i]].add(ques.question2[i])
+            q_dict[ques.question2[i]].add(ques.question1[i])
+
+        df_train['q1_q2_intersect'] = df_train.apply(q1_q2_intersect, axis=1, raw=True)
+        df_train['q1_freq'] = df_train.apply(q1_freq, axis=1, raw=True)
+        df_train['q2_freq'] = df_train.apply(q2_freq, axis=1, raw=True)
+
+        df_test['q1_q2_intersect'] = df_test.apply(q1_q2_intersect, axis=1, raw=True)
+        df_test['q1_freq'] = df_test.apply(q1_freq, axis=1, raw=True)
+        df_test['q2_freq'] = df_test.apply(q2_freq, axis=1, raw=True)
+
+        test_leaky = df_test.loc[:, ['q1_q2_intersect','q1_freq','q2_freq']]
+        del df_test
+
+        train_leaky = df_train.loc[:, ['q1_q2_intersect','q1_freq','q2_freq']]
+
+        # explore
+        stops = set(stopwords.words("english"))
+
+        df_train['question1'] = df_train['question1'].map(lambda x: str(x).lower().split())
+        df_train['question2'] = df_train['question2'].map(lambda x: str(x).lower().split())
+
+        train_qs = pd.Series(df_train['question1'].tolist() + df_train['question2'].tolist())
+
+        words = [x for y in train_qs for x in y]
+        counts = Counter(words)
+        weights = {word: get_weight(count) for word, count in counts.items()}
+
+        print('Building Features')
+        X_train = build_features(df_train, stops, weights)
+        X_train = pd.concat((X_train, X_train_ab, train_leaky), axis=1)
+        y_train = df_train['is_duplicate'].values
+        X_train.to_pickle("../features/X_train.pkl")
+    else:
+        X_train = pd.read_pickle("../features/X_train.pkl")
     
     X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.1, random_state=4242)
 
@@ -278,6 +281,7 @@ def main():
     params['max_depth'] = 7
     params['subsample'] = 0.6
     params['base_score'] = 0.2
+    params['silent'] = True
     # params['scale_pos_weight'] = 0.2
 
     d_train = xgb.DMatrix(X_train, label=y_train)
@@ -290,21 +294,25 @@ def main():
     bst.save_model(args.save + '.mdl')
 
 
-    print('Building Test Features')
-    df_test = pd.read_csv('../features/test_features.csv', encoding="ISO-8859-1")
-    x_test_ab = df_test.iloc[:, 2:-1]
-    x_test_ab = x_test_ab.drop('euclidean_distance', axis=1)
-    x_test_ab = x_test_ab.drop('jaccard_distance', axis=1)
+    if train_flag:
+        print('Building Test Features')
+        df_test = pd.read_csv('../features/test_features.csv', encoding="ISO-8859-1")
+        x_test_ab = df_test.iloc[:, 2:-1]
+        x_test_ab = x_test_ab.drop('euclidean_distance', axis=1)
+        x_test_ab = x_test_ab.drop('jaccard_distance', axis=1)
     
-    df_test = pd.read_csv('../data/test.csv')
-    df_test = df_test.fillna(' ')
+        df_test = pd.read_csv('../data/test.csv')
+        df_test = df_test.fillna(' ')
 
-    df_test['question1'] = df_test['question1'].map(lambda x: str(x).lower().split())
-    df_test['question2'] = df_test['question2'].map(lambda x: str(x).lower().split())
+        df_test['question1'] = df_test['question1'].map(lambda x: str(x).lower().split())
+        df_test['question2'] = df_test['question2'].map(lambda x: str(x).lower().split())
     
-    x_test = build_features(df_test, stops, weights)
-    x_test = pd.concat((x_test, x_test_ab, test_leaky), axis=1)
-    x_test.to_pickle("../features/x_test.pkl")
+        x_test = build_features(df_test, stops, weights)
+        x_test = pd.concat((x_test, x_test_ab, test_leaky), axis=1)
+        x_test.to_pickle("../features/x_test.pkl")
+    else:
+        df_test = pd.read_csv('../data/test.csv')
+        x_test = pd.read_pickle("../features/x_test.pkl")
     d_test = xgb.DMatrix(x_test)
     d_train_all = xgb.DMatrix(pd.concat((X_train, X_valid), axis=0), label=np.concatenate((y_train, y_valid)))
     bst_refit = xgb.train(params, d_train_all, int(bst.attr('best_iteration')), verbose_eval=50)
