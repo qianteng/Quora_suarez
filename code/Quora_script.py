@@ -294,7 +294,7 @@ def main():
     x_test_ab = x_test_ab.drop('euclidean_distance', axis=1)
     x_test_ab = x_test_ab.drop('jaccard_distance', axis=1)
     
-    df_test = pd.read_csv('../data/test.csv')
+    df_test = pd.read_csv('../data/test.csv')[:1000]
     df_test = df_test.fillna(' ')
 
     df_test['question1'] = df_test['question1'].map(lambda x: str(x).lower().split())
