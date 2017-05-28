@@ -1,8 +1,6 @@
-Data/
-Code/conf/
-Result/
-Fig/
-Tmp/
+data/
+features/
+predictions/
 .DS_Store
 *~
 _*_
