@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 Example of an LSTM model with GloVe embeddings along with magic features
 
@@ -15,7 +16,7 @@ import csv
 import codecs
 import numpy as np
 import pandas as pd
-
+import ipdb
 import importlib
 from string import punctuation
 from collections import defaultdict
@@ -71,10 +72,14 @@ count = 0
 for line in f:
     values = line.split()
     word = values[0]
-    coefs = np.asarray(values[1:], dtype='float32')
-    embeddings_index[word] = coefs
+    try:
+        coefs = np.asarray(values[1:], dtype=np.float32)
+        embeddings_index[word] = coefs
+    except:
+        print(word)
+        pass
 f.close()
-
+ipdb.set_trace()
 print('Found %d word vectors of glove.' % len(embeddings_index))
 
 ########################################
