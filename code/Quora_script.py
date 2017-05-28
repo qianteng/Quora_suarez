@@ -220,7 +220,7 @@ def main():
         
     def q1_q2_intersect(row):
         return(len(set(q_dict[row['question1']]).intersection(set(q_dict[row['question2']]))))
-    #ipdb.set_trace()
+
     df_train['q1_q2_intersect'] = df_train.apply(q1_q2_intersect, axis=1, raw=True)
     df_train['q1_freq'] = df_train.apply(q1_freq, axis=1, raw=True)
     df_train['q2_freq'] = df_train.apply(q2_freq, axis=1, raw=True)
@@ -250,7 +250,9 @@ def main():
     X_train = build_features(df_train, stops, weights)
     X_train = pd.concat((X_train, X_train_ab, train_leaky), axis=1)
     y_train = df_train['is_duplicate'].values
-
+    
+    X_train.to_pickle("../features/X_train.pkl")
+    
     X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.1, random_state=4242)
 
     #UPDownSampling
@@ -302,12 +304,14 @@ def main():
     
     x_test = build_features(df_test, stops, weights)
     x_test = pd.concat((x_test, x_test_ab, test_leaky), axis=1)
+    x_test.to_pickle("../features/x_test.pkl")
     d_test = xgb.DMatrix(x_test)
-    p_test = bst.predict(d_test)
+    d_train_all = xgb.DMatrix(pd.concat((X_train, X_valid), axis=0), label=np.concatenate((y_train, y_valid)))
+    bst_refit = xgb.train(params, d_train_all, int(bst.attr('best_iteration')), verbose_eval=50)
+    p_test = bst_refit.predict(d_test)
     sub = pd.DataFrame()
     sub['test_id'] = df_test['test_id']
     sub['is_duplicate'] = p_test
-    #sub.to_csv('../predictions/' + args.save + '.csv')
     sub.to_csv('../predictions/' + args.save + '.csv', index=False)
 
 if __name__ == '__main__':
