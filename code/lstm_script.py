@@ -16,6 +16,7 @@ import codecs
 import numpy as np
 import pandas as pd
 
+import importlib
 from string import punctuation
 from collections import defaultdict
 
@@ -32,9 +33,9 @@ from keras.callbacks import EarlyStopping, ModelCheckpoint
 
 from sklearn.preprocessing import StandardScaler
 
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
+#import sys
+#importlib.reload(sys)
+#sys.setdefaultencoding('utf-8')
 
 ########################################
 ## set directories and parameters
