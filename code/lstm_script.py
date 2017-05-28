@@ -79,7 +79,6 @@ for line in f:
         print(word)
         pass
 f.close()
-ipdb.set_trace()
 print('Found %d word vectors of glove.' % len(embeddings_index))
 
 ########################################
@@ -153,6 +152,13 @@ with codecs.open(TRAIN_DATA_FILE, encoding='utf-8') as f:
         texts_1.append(text_to_wordlist(values[3]))
         texts_2.append(text_to_wordlist(values[4]))
         labels.append(int(values[5]))
+        
+#df_train = pd.read_csv(TRAIN_DATA_FILE, encoding="ISO-8859-1")
+#texts_1 = df_train['question1'].tolist()
+#texts_2 = df_train['question2'].tolist()
+#labels = df_train['is_duplicate'].tolist()
+#del df_train
+
 print('Found %s texts in train.csv' % len(texts_1))
 
 test_texts_1 = []
@@ -165,6 +171,13 @@ with codecs.open(TEST_DATA_FILE, encoding='utf-8') as f:
         test_texts_1.append(text_to_wordlist(values[1]))
         test_texts_2.append(text_to_wordlist(values[2]))
         test_ids.append(values[0])
+
+#df_test = pd.read_csv(TEST_DATA_FILE, encoding="ISO-8859-1")
+#test_texts_1 = df_test['question1'].tolist()
+#test_texts_2 = df_test['question2'].tolist()
+#test_ids = df_test['is_duplicate'].tolist()
+#del df_test
+        
 print('Found %s texts in test.csv' % len(test_texts_1))
 
 tokenizer = Tokenizer(num_words=MAX_NB_WORDS)
@@ -283,7 +296,7 @@ embedded_sequences_2 = embedding_layer(sequence_2_input)
 y1 = lstm_layer(embedded_sequences_2)
 
 leaks_input = Input(shape=(leaks.shape[1],))
-leaks_dense = Dense(num_dense/2, activation=act)(leaks_input)
+leaks_dense = Dense(int(num_dense/2), activation=act)(leaks_input)
 
 merged = concatenate([x1, y1, leaks_dense])
 merged = BatchNormalization()(merged)
