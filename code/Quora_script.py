@@ -196,15 +196,15 @@ def main():
                         help='save_file_names')
     args = parser.parse_args()
 
-    df_train = pd.read_csv('../features/train_features.csv', encoding="ISO-8859-1")[:1000]
+    df_train = pd.read_csv('../features/train_features.csv', encoding="ISO-8859-1")
     X_train_ab = df_train.iloc[:, 2:-1]
     X_train_ab = X_train_ab.drop('euclidean_distance', axis=1)
     X_train_ab = X_train_ab.drop('jaccard_distance', axis=1)
 
-    df_train = pd.read_csv('../data/train.csv')[:1000]
+    df_train = pd.read_csv('../data/train.csv')
     df_train = df_train.fillna(' ')
 
-    df_test = pd.read_csv('../data/test.csv')[:1000]
+    df_test = pd.read_csv('../data/test.csv')
     ques = pd.concat([df_train[['question1', 'question2']], \
         df_test[['question1', 'question2']]], axis=0).reset_index(drop='index')
     q_dict = defaultdict(set)
@@ -289,12 +289,12 @@ def main():
 
 
     print('Building Test Features')
-    df_test = pd.read_csv('../features/test_features.csv', encoding="ISO-8859-1")[:1000]
+    df_test = pd.read_csv('../features/test_features.csv', encoding="ISO-8859-1")
     x_test_ab = df_test.iloc[:, 2:-1]
     x_test_ab = x_test_ab.drop('euclidean_distance', axis=1)
     x_test_ab = x_test_ab.drop('jaccard_distance', axis=1)
     
-    df_test = pd.read_csv('../data/test.csv')[:1000]
+    df_test = pd.read_csv('../data/test.csv')
     df_test = df_test.fillna(' ')
 
     df_test['question1'] = df_test['question1'].map(lambda x: str(x).lower().split())
