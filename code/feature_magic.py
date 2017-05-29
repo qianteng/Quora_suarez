@@ -1,5 +1,6 @@
 # convert magic features from online to the format used by Quora_HD
 import pandas as pd
+import pickle
 
 def _save(fname, data, protocol=4):
     # use protocol=4 to save files larger than 4GB
