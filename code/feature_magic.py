@@ -9,6 +9,7 @@ def _save(fname, data, protocol=4):
 
 X_train = pd.read_pickle("../features/X_train.pkl")
 X_test = pd.read_pickle("../features/x_test.pkl")
+#k_core = pd.read_csv("../features/question_kcores.csv")    not working yet
 magic_xgb = pd.concat([X_train, X_test], axis = 0)
 fname = "../features/magic_xgb_{:d}D.pkl".format(magic_xgb.shape[1])
 _save(fname, magic_xgb.values)
