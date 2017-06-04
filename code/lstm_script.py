@@ -224,16 +224,20 @@ def q2_freq(row):
 def q1_q2_intersect(row):
     return(len(set(q_dict[row['question1']]).intersection(set(q_dict[row['question2']]))))
 
-train_df['q1_q2_intersect'] = train_df.apply(q1_q2_intersect, axis=1, raw=True)
-train_df['q1_freq'] = train_df.apply(q1_freq, axis=1, raw=True)
-train_df['q2_freq'] = train_df.apply(q2_freq, axis=1, raw=True)
+#train_df['q1_q2_intersect'] = train_df.apply(q1_q2_intersect, axis=1, raw=True)
+#train_df['q1_freq'] = train_df.apply(q1_freq, axis=1, raw=True)
+#train_df['q2_freq'] = train_df.apply(q2_freq, axis=1, raw=True)
 
-test_df['q1_q2_intersect'] = test_df.apply(q1_q2_intersect, axis=1, raw=True)
-test_df['q1_freq'] = test_df.apply(q1_freq, axis=1, raw=True)
-test_df['q2_freq'] = test_df.apply(q2_freq, axis=1, raw=True)
+#test_df['q1_q2_intersect'] = test_df.apply(q1_q2_intersect, axis=1, raw=True)
+#test_df['q1_freq'] = test_df.apply(q1_freq, axis=1, raw=True)
+#test_df['q2_freq'] = test_df.apply(q2_freq, axis=1, raw=True)
 
-leaks = train_df[['q1_q2_intersect', 'q1_freq', 'q2_freq']]
-test_leaks = test_df[['q1_q2_intersect', 'q1_freq', 'q2_freq']]
+#leaks = train_df[['q1_q2_intersect', 'q1_freq', 'q2_freq']]
+#test_leaks = test_df[['q1_q2_intersect', 'q1_freq', 'q2_freq']]
+magic = pd.read_pickle("../features/magic_xgb_48D.pkl")
+magic = pd.DataFrame(magic)
+leaks = magic.iloc[:len(train_df)]
+test_leaks = magic.iloc[len(train_df):]
 
 ss = StandardScaler()
 ss.fit(np.vstack((leaks, test_leaks)))
