@@ -238,7 +238,6 @@ magic = pd.read_pickle("../features/magic_xgb_48D.pkl")
 magic = pd.DataFrame(magic)
 leaks = magic.iloc[:len(train_df)].copy()
 test_leaks = magic.iloc[len(train_df):].copy()
-test_leaks.index = test_df.index
 
 #ss = StandardScaler()
 #ss.fit(np.vstack((leaks, test_leaks)))
@@ -270,12 +269,12 @@ idx_val = perm[int(len(data_1)*(1-VALIDATION_SPLIT)):]
 
 data_1_train = np.vstack((data_1[idx_train], data_2[idx_train]))
 data_2_train = np.vstack((data_2[idx_train], data_1[idx_train]))
-leaks_train = np.vstack((leaks[idx_train], leaks[idx_train]))
+leaks_train = np.vstack((leaks.loc[idx_train], leaks.loc[idx_train]))
 labels_train = np.concatenate((labels[idx_train], labels[idx_train]))
 
 data_1_val = np.vstack((data_1[idx_val], data_2[idx_val]))
 data_2_val = np.vstack((data_2[idx_val], data_1[idx_val]))
-leaks_val = np.vstack((leaks[idx_val], leaks[idx_val]))
+leaks_val = np.vstack((leaks.loc[idx_val], leaks.loc[idx_val]))
 labels_val = np.concatenate((labels[idx_val], labels[idx_val]))
 
 weight_val = np.ones(len(labels_val))
