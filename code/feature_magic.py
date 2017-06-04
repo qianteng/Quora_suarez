@@ -9,6 +9,7 @@ def _save(fname, data, protocol=4):
 
 X_train = pd.read_pickle("../features/X_train.pkl")
 X_test = pd.read_pickle("../features/x_test.pkl")
+magic_xgb = pd.concat([X_train, X_test], axis = 0)
 
 dfTrain = pd.read_csv("../data/train.csv", encoding="ISO-8859-1")
 dfTest = pd.read_csv("../data/test.csv", encoding="ISO-8859-1")
@@ -17,11 +18,20 @@ for col in "question1", "question2":
     dfAll[col] = dfAll[col].str.lower()
 k_core = pd.read_csv("../features/question_kcores.csv")
 k_core.index = k_core.question
-feature_k_core = dfAll["question1"].map(k_core['kcores']).fillna(-1, inplace = True)
 
-magic_xgb = pd.concat([X_train, X_test], axis = 0)
+
+magic_xgb['q1_k_core'] = dfAll["question1"].map(k_core['kcores']).values
+magic_xgb['q1_k_core'].fillna(1, inplace = True)
+magic_xgb['q2_k_core'] = dfAll["question2"].map(k_core['kcores']).values
+magic_xgb['q2_k_core'].fillna(1, inplace = True)
+
+X_train = magic_xgb.iloc[0:len(X_train)]
+x_test = magic_xgb.iloc[len(X_train):]
+X_train.to_pickle("../features/X_train_new.pkl")
+x_test.to_pickle("../features/x_test_new.pkl")
 fname = "../features/magic_xgb_{:d}D.pkl".format(magic_xgb.shape[1])
 _save(fname, magic_xgb.values)
+
 
 
 

@@ -257,7 +257,7 @@ def main():
         df_train = pd.read_csv('../data/train.csv')
         df_train = df_train.fillna(' ')
         y_train = df_train['is_duplicate'].values
-        X_train = pd.read_pickle("../features/X_train.pkl")
+        X_train = pd.read_pickle("../features/X_train_new.pkl")
     
     X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.1, random_state=4242)
 
@@ -315,7 +315,7 @@ def main():
         x_test.to_pickle("../features/x_test.pkl")
     else:
         df_test = pd.read_csv('../data/test.csv')
-        x_test = pd.read_pickle("../features/x_test.pkl")
+        x_test = pd.read_pickle("../features/x_test_new.pkl")
     d_test = xgb.DMatrix(x_test)
     d_train_all = xgb.DMatrix(pd.concat((X_train, X_valid), axis=0), label=np.concatenate((y_train, y_valid)))
     bst_refit = xgb.train(params, d_train_all, int(bst.attr('best_iteration')), verbose_eval=50)
