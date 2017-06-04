@@ -1,6 +1,7 @@
 # convert magic features from online to the format used by Quora_HD
 import pandas as pd
 import pickle
+from collections import Counter
 
 def _save(fname, data, protocol=4):
     # use protocol=4 to save files larger than 4GB
@@ -30,6 +31,13 @@ pagerank_test = pd.read_csv("../features/pagerank_test.csv")
 pagerank_all = pd.concat([pagerank_train, pagerank_test], axis = 0)
 magic_xgb['pagerank_q1'] = pagerank_all['q1_pr']
 magic_xgb['pagerank_q2'] = pagerank_all['q2_pr']
+
+# fill NA with the most frequent value
+for col in magic_xgb.columns:
+    if sum(magic_xgb[col].isnull()) > 0:
+        common = Counter(magic_xgb[col]).most_common(1)[0][0]
+        print(common)
+        magic_xgb[col].fillna(common, inplace = True)
 
 X_train = magic_xgb.iloc[0:len(X_train)]
 x_test = magic_xgb.iloc[len(X_train):]

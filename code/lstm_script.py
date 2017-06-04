@@ -145,38 +145,38 @@ def text_to_wordlist(text, remove_stopwords=False, stem_words=False):
 texts_1 = [] 
 texts_2 = []
 labels = []
-with codecs.open(TRAIN_DATA_FILE, encoding='utf-8') as f:
-    reader = csv.reader(f, delimiter=',')
-    header = next(reader)
-    for values in reader:
-        texts_1.append(text_to_wordlist(values[3]))
-        texts_2.append(text_to_wordlist(values[4]))
-        labels.append(int(values[5]))
+#with codecs.open(TRAIN_DATA_FILE, encoding='utf-8') as f:
+#    reader = csv.reader(f, delimiter=',')
+#    header = next(reader)
+#    for values in reader:
+#        texts_1.append(text_to_wordlist(values[3]))
+#        texts_2.append(text_to_wordlist(values[4]))
+#        labels.append(int(values[5]))
         
-#df_train = pd.read_csv(TRAIN_DATA_FILE, encoding="ISO-8859-1")
-#texts_1 = df_train['question1'].tolist()
-#texts_2 = df_train['question2'].tolist()
-#labels = df_train['is_duplicate'].tolist()
-#del df_train
+df_train = pd.read_csv(TRAIN_DATA_FILE, encoding="ISO-8859-1")
+texts_1 = df_train['question1'].tolist()
+texts_2 = df_train['question2'].tolist()
+labels = df_train['is_duplicate'].tolist()
+del df_train
 
 print('Found %s texts in train.csv' % len(texts_1))
 
 test_texts_1 = []
 test_texts_2 = []
 test_ids = []
-with codecs.open(TEST_DATA_FILE, encoding='utf-8') as f:
-    reader = csv.reader(f, delimiter=',')
-    header = next(reader)
-    for values in reader:
-        test_texts_1.append(text_to_wordlist(values[1]))
-        test_texts_2.append(text_to_wordlist(values[2]))
-        test_ids.append(values[0])
+#with codecs.open(TEST_DATA_FILE, encoding='utf-8') as f:
+#    reader = csv.reader(f, delimiter=',')
+#    header = next(reader)
+#    for values in reader:
+#        test_texts_1.append(text_to_wordlist(values[1]))
+#        test_texts_2.append(text_to_wordlist(values[2]))
+#        test_ids.append(values[0])
 
-#df_test = pd.read_csv(TEST_DATA_FILE, encoding="ISO-8859-1")
-#test_texts_1 = df_test['question1'].tolist()
-#test_texts_2 = df_test['question2'].tolist()
-#test_ids = df_test['is_duplicate'].tolist()
-#del df_test
+df_test = pd.read_csv(TEST_DATA_FILE, encoding="ISO-8859-1")
+test_texts_1 = df_test['question1'].tolist()
+test_texts_2 = df_test['question2'].tolist()
+test_ids = df_test['is_duplicate'].tolist()
+del df_test
         
 print('Found %s texts in test.csv' % len(test_texts_1))
 
@@ -238,11 +238,12 @@ magic = pd.read_pickle("../features/magic_xgb_48D.pkl")
 magic = pd.DataFrame(magic)
 leaks = magic.iloc[:len(train_df)]
 test_leaks = magic.iloc[len(train_df):]
+test_leaks.index = test_df.index
 
-ss = StandardScaler()
-ss.fit(np.vstack((leaks, test_leaks)))
-leaks = ss.transform(leaks)
-test_leaks = ss.transform(test_leaks)
+#ss = StandardScaler()
+#ss.fit(np.vstack((leaks, test_leaks)))
+#leaks = ss.transform(leaks)
+#test_leaks = ss.transform(test_leaks)
 
 ipdb.set_trace()
 ########################################
