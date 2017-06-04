@@ -244,6 +244,7 @@ ss.fit(np.vstack((leaks, test_leaks)))
 leaks = ss.transform(leaks)
 test_leaks = ss.transform(test_leaks)
 
+ipdb.set_trace()
 ########################################
 ## prepare embeddings
 ########################################
