@@ -236,8 +236,8 @@ def q1_q2_intersect(row):
 #test_leaks = test_df[['q1_q2_intersect', 'q1_freq', 'q2_freq']]
 magic = pd.read_pickle("../features/magic_xgb_48D.pkl")
 magic = pd.DataFrame(magic)
-leaks = magic.iloc[:len(train_df)]
-test_leaks = magic.iloc[len(train_df):]
+leaks = magic.iloc[:len(train_df)].copy()
+test_leaks = magic.iloc[len(train_df):].copy()
 test_leaks.index = test_df.index
 
 #ss = StandardScaler()
