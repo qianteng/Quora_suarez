@@ -3,15 +3,15 @@ Feature based on Tien-Dung Le's post:
 https://www.kaggle.com/c/quora-question-pairs/discussion/33371
 
 Slightly different idea here. Instead of making a id-based graph/dataframe, we do it based on lowercase questions.
-Not run by me. Just use the csv file downloaded from online
+
 """
 import networkx as nx
 import pandas as pd
 from tqdm import tqdm
 
 
-df_train = pd.read_csv('../data/train.csv')[:100]
-df_test = pd.read_csv('../data/test.csv')[:100]
+df_train = pd.read_csv('../input/train.csv')
+df_test = pd.read_csv('../input/test.csv')
 
 dfs = (df_train, df_test)
 
