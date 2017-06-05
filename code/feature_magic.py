@@ -2,6 +2,7 @@
 import pandas as pd
 import pickle
 from collections import Counter
+pd.set_option('mode.use_inf_as_null', True)
 
 def _save(fname, data, protocol=4):
     # use protocol=4 to save files larger than 4GB

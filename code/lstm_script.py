@@ -238,11 +238,13 @@ magic = pd.read_pickle("../features/magic_xgb_48D.pkl")
 magic = pd.DataFrame(magic)
 leaks = magic.iloc[:len(train_df)].copy()
 test_leaks = magic.iloc[len(train_df):].copy()
+test_leaks.index = test_df.index
 
-#ss = StandardScaler()
-#ss.fit(np.vstack((leaks, test_leaks)))
-#leaks = ss.transform(leaks)
-#test_leaks = ss.transform(test_leaks)
+ipdb.set_trace()
+ss = StandardScaler()
+ss.fit(np.vstack((leaks, test_leaks)))
+leaks = ss.transform(leaks)
+test_leaks = ss.transform(test_leaks)
 
 ########################################
 ## prepare embeddings
