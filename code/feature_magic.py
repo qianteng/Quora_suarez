@@ -37,6 +37,8 @@ magic_xgb['pagerank_q2'] = pagerank_all['q2_pr']
 for col in magic_xgb.columns:
     if sum(magic_xgb[col].isnull()) > 0:
         common = Counter(magic_xgb[col]).most_common(1)[0][0]
+        if np.isinf(common):
+            common = Counter(magic_xgb[col]).most_common(1)[1][0]
         print(common)
         magic_xgb[col].fillna(common, inplace = True)
 

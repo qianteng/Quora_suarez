@@ -240,7 +240,6 @@ leaks = magic.iloc[:len(train_df)].copy()
 test_leaks = magic.iloc[len(train_df):].copy()
 test_leaks.index = test_df.index
 
-ipdb.set_trace()
 ss = StandardScaler()
 ss.fit(np.vstack((leaks, test_leaks)))
 leaks = ss.transform(leaks)
