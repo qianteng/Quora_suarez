@@ -356,4 +356,4 @@ preds /= 2
 submission = pd.DataFrame()
 submission['test_id'] = test_ids
 submission['is_duplicate'] = preds.ravel()
-submission.to_csv('../predictions/' + '%.4f_'%(bst_val_score)+STAMP+'.csv', index=False)
+submission.to_csv('../predictions/' + '%.4f_'%(bst_val_score)+STAMP+'_new.csv', index=False)
